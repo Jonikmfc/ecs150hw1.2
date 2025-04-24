@@ -224,8 +224,15 @@ int main(void)
                 fprintf(stderr, "Error: cannot open input file\n");
                 continue;
             }
-            arg_inp[in_i]   = NULL; // remove '<'
-            arg_inp[in_i+1] = NULL; // remove filename
+            // fix for testcase
+            int i = in_i;
+            while (i +2 < arg_count) {
+                arg_inp[i] = arg_inp[i +2];
+                i = i + 1;
+            }
+
+            arg_count = arg_count -2;
+            arg_inp[arg_count] = NULL;
         }
 
         // background job detecting
