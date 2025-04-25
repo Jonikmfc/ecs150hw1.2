@@ -39,14 +39,14 @@ int input_tokenizer(char *cmd, char *ar_cg[]){
     return ar_count;
 }
 static int argv_end_loc(int carg, int num_pipes, int pipe_pos[], int out_i, int arg_count) {
-    int loc;
+    int loc; // if there are still pipes left, go to the next pipe position
     if (carg < num_pipes) {
       loc = pipe_pos[carg];
     } else {
-      if (out_i != -1)
+      if (out_i != -1) // end at > if there are no pipes left
         loc = out_i;
       else
-        loc = arg_count;
+        loc = arg_count; // no more pipes
     }
     return loc;
 }
@@ -324,8 +324,8 @@ int main(void)
         // pipeline stuff
         if (num_pipes) {
             int rd_end = (fd_in != -1 ? fd_in : STDIN_FILENO), fds[2];
-            pid_t pids[4];
-            int   status[4];
+            pid_t pids[4]; // store PIDs of pipeline children
+            int   status[4]; // store exit statuses
             int seg_start = 0;
 
             for (int c = 0; c <= num_pipes; ++c) {
@@ -333,7 +333,7 @@ int main(void)
                                           pipe_pos, out_i, arg_count);
                 arg_inp[seg_end] = NULL;
                 char **sub_argv  = &arg_inp[seg_start];
-                int fdout = (c == num_pipes && fd_out != -1)
+                int fdout = (c == num_pipes && fd_out != -1) // choose output fd if the file is last segment
                             ? fd_out : STDOUT_FILENO;
                 if (c < num_pipes) {
                     pipe(fds);
@@ -451,3 +451,4 @@ int main(void)
     }
     return EXIT_SUCCESS;
 }
+
