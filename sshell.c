@@ -341,6 +341,10 @@ int main(void)
                     bg_pids[i] = pids[i];
                 }
                 bg_nprocs  = num_pipes + 1;
+                // aditional fix 
+                if (bg_command) {
+                    free(bg_command);
+                   }
                 bg_command = strdup(orig_cmd);
                 if (fd_out != -1) close(fd_out);
                 continue;
