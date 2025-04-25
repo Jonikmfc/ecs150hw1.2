@@ -1,0 +1,89 @@
+--- Running test case: system_syscall ---
+Pass: 
+1.00000000000000000000
+
+
+--- Running test case: builtin_exit ---
+Pass: Bye...
+Pass: + completed 'exit' [0]
+1.00000000000000000000
+
+
+--- Running test case: exit_retval ---
+Pass: 0
+1.00000000000000000000
+
+
+--- Running test case: cmd_no_arg_1 ---
+Pass: titi
+Pass: toto
+1.00000000000000000000
+
+
+--- Running test case: cmd_no_arg_2 ---
+Pass: 
+1.00000000000000000000
+
+
+--- Running test case: cmd_not_found ---
+Pass: Error: command not found
+Pass: + completed 'commandthatdoesntexists' [1]
+1.00000000000000000000
+
+
+--- Running test case: cmd_one_arg ---
+Pass: lstest
+1.00000000000000000000
+
+
+--- Running test case: cmd_one_arg_success ---
+Pass: + completed 'ls dir_test' [0]
+1.00000000000000000000
+
+
+--- Running test case: cmd_one_arg_fail ---
+Pass: + completed 'ls dir_test' [2]
+1.00000000000000000000
+
+
+--- Running test case: cmd_16_args ---
+Pass: a a a a a a a a a a a a a a a
+1.00000000000000000000
+
+
+--- Running test case: cmd_one_arg_whitespace ---
+Pass: lstest
+Pass: + completed '    ls    dir_test' [0]
+1.00000000000000000000
+
+
+--- Running test case: cd_pwd ---
+Pass: /Users/eeshabandaru/Desktop/all_parts/tmp.HNKAzOQdBG/dir_test
+Pass: + completed 'cd dir_test' [0]
+1.00000000000000000000
+
+
+--- Running test case: out_redir ---
+Pass: hello
+1.00000000000000000000
+
+
+--- Running test case: pipe ---
+Pass: hello WORLD
+1.00000000000000000000
+
+
+--- Running in_redir ---
+Pass: hello
+1.00000000000000000000
+
+
+--- Running background ---
+(Note: this test might hang a little)
+Pass: sshell@ucd$ sleep 2
+Pass: + completed 'sleep 1&' [0]
+Pass: + completed 'sleep 2' [0]
+Pass: Bye...
+1.00000000000000000000
+
+
