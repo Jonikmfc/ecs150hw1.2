@@ -20,6 +20,8 @@ static pid_t bg_pids[MAX_BG];
 static int  bg_nprocs = 0;
 static char *bg_command = NULL;
 
+
+
 int input_tokenizer(char *cmd, char *ar_cg[]){
     int ar_count = 0;
     char *token = strtok(cmd, " \t");  // to handle input
@@ -36,7 +38,6 @@ int input_tokenizer(char *cmd, char *ar_cg[]){
     }
     return ar_count;
 }
-
 static int argv_end_loc(int carg, int num_pipes, int pipe_pos[], int out_i, int arg_count) {
     int loc;
     if (carg < num_pipes) {
@@ -106,7 +107,7 @@ int main(void)
                 bg_nprocs = 0;
             }
         }
-
+        
         /* Print prompt */
         printf("sshell@ucd$ ");
         fflush(stdout);
@@ -147,10 +148,13 @@ int main(void)
         }
 
         // --- Phase 4: meta-character spacing for > | < & ---
-        int si = 0;
-        int ci = 0;
+        int si = 0; // space index
+        int ci = 0; // comand index
+
+        // the preprocessing phase 
         while (cmd[ci++]) {
             int c1 = ci - 1;
+            // spaces out inputs 
             if (cmd[c1] == '>' || cmd[c1] == '|' || cmd[c1] == '<' || cmd[c1] == '&') {
                 isov[si++] = ' ';
                 isov[si++] = cmd[c1];
@@ -163,15 +167,19 @@ int main(void)
 
         // call tokenization
         int arg_count = input_tokenizer(isov, arg_inp);
-        if (arg_count == -1) { // too many args
+        //  if its tokenized returns the number of tokens. 
+
+
+        if (arg_count == -1) { // too many args tokenization failed 
             fprintf(stderr, "Error: too many process arguments\n");
             continue;
         }
         arg_inp[arg_count] = NULL;
-
+        // phase 1
         // pwd builtin function
         if (!strcmp(arg_inp[0], "pwd")) {
             char cwd[PATH_MAX_LEN]; // uses defined max path length
+            // get cwd fetches working directory and if its not null prints
             if (getcwd(cwd, sizeof(cwd)) != NULL) {
                 printf("%s\n", cwd);
                 fprintf(stderr, "+ completed 'pwd' [0]\n");
@@ -184,11 +192,13 @@ int main(void)
 
         // cd builtin
         if (!strcmp(arg_inp[0], "cd")) {
-            if (arg_count < 2) {
+            if (arg_count < 2) { //  need at least 2 for cd to work 
                 // if no directory is given
                 fprintf(stderr, "Error: missing argument for cd\n");
                 fprintf(stderr, "+ completed 'cd' [1]\n");
-            } else if (chdir(arg_inp[1]) != 0) {
+            } 
+            // if its actually the right amount for cd, itll move directories 
+            else if (chdir(arg_inp[1]) != 0) {
                 // if the given directory doesn't exist or cannot cd
                 fprintf(stderr, "Error: cannot cd into directory\n");
                 fprintf(stderr, "+ completed 'cd %s' [1]\n", arg_inp[1]);
@@ -198,13 +208,16 @@ int main(void)
             }
             continue; // don't fork
         }
+        // phase 1 end 
 
-        // input redirection parsing
-        int in_i = -1;
-        int fd_in = -1;
+        // input redirection 
+        int in_i = -1;  // input 
+        int fd_in = -1; // file descriptor 
+        // both indexes 
         for (int i = 0; i < arg_count; ++i) {
+            // finds the '<' in tokenizaed input
             if (!strcmp(arg_inp[i], "<")) { in_i = i; break; }
-        }
+        }// checks for errors 
         if (in_i != -1) {
             if (in_i == arg_count - 1) {
                 fprintf(stderr, "Error: no input file\n");
@@ -251,6 +264,7 @@ int main(void)
         }
 
         // locate | and >
+        // phase 2 & 3 
         int pipe_pos[3];
         int num_pipes = 0;
         int out_i      = -1;
@@ -363,8 +377,7 @@ int main(void)
             if (fd_out != -1) close(fd_out);
             continue;
         }
-
-        // single command
+        // phase 4 single command
         child_process proc;
         proc.p_id = fork();
         if (proc.p_id < 0) {
@@ -372,7 +385,7 @@ int main(void)
         }
 
         if (!proc.p_id) {  /* child */
-            // Phase 4: apply input redirection
+            // Phase 4: the input redirection
             if (fd_in != -1) {
                 dup2(fd_in, STDIN_FILENO);
                 close(fd_in);
